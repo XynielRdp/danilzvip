@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAYMENT DANIEL NESIA - DB2</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+        body { background: #0f172a; color: white; font-family: 'Poppins', sans-serif; padding: 20px 10px; }
+        .card-payment { background: #1e293b; border-radius: 30px; padding: 30px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); max-width: 450px; margin: auto; }
+        
+        .qris-wrapper { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 20px; 
+            margin: 20px 0; 
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+            border: 4px solid #0ea5e9;
+        }
+        .qris-img { 
+            width: 100%; 
+            height: auto; 
+            display: block; 
+            margin: auto;
+            border-radius: 10px;
+        }
+
+        .form-control, .form-select { background: #111827; color: white; border: 1px solid #374151; border-radius: 15px; padding: 12px; }
+        .btn-confirm { background: linear-gradient(135deg, #0ea5e9, #2563eb); border: none; font-weight: 800; padding: 18px; border-radius: 18px; width: 100%; margin-top: 20px; transition: 0.3s; }
+        .btn-confirm:hover { transform: scale(1.03); box-shadow: 0 10px 25px rgba(14, 165, 233, 0.5); }
+    </style>
+</head>
+<body>
+
+<div class="card-payment">
+    <div class="text-center mb-4">
+        <h1 class="fw-800 text-info m-0">DANIEL NESIA</h1>
+        <p class="small opacity-50">Pembayaran Aman & Instan (Server 2)</p>
+    </div>
+
+    <div class="mb-3">
+        <label class="small fw-bold mb-2">👤 NAMA PENGIRIM</label>
+        <input type="text" id="senderName" class="form-control" placeholder="Nama Anda">
+    </div>
+
+    <div class="mb-3">
+        <label class="small fw-bold mb-2">💳 METODE</label>
+        <select id="paymentMethod" class="form-select">
+            <option value="DANA">DANA</option>
+            <option value="GOPAY">GOPAY</option>
+            <option value="OVO">OVO</option>
+            <option value="BANK">TRANSFER BANK</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="small fw-bold mb-2">💰 NOMINAL (Rp)</label>
+        <input type="number" id="amount" class="form-control" placeholder="Contoh: 5000">
+    </div>
+
+    <div class="text-center mt-4">
+        <div class="qris-wrapper">
+            <img src="https://cdn.phototourl.com/free/2026-04-23-7b605977-0781-4d7d-8aae-8ff8d58730fb.png" alt="QRIS DANIEL NESIA" class="qris-img">
+        </div>
+    </div>
+
+    <button class="btn-confirm text-white" onclick="confirmPayment()">KONFIRMASI SEKARANG</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+    // KONFIGURASI DATABASE KEDUA
+    const firebaseConfig = {
+        apiKey: "AIzaSyCwrvbPBNwB0r7PSdFBqa4wS2gag-MmpDE",
+        // GANTI LINK DI BAWAH INI DENGAN URL DATABASE KEDUA PADUKA
+        databaseURL: "https://DATABASE_KEDUA_KAMU.firebaseio.com/" 
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function speak(txt) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(txt);
+            msg.lang = 'id-ID';
+            window.speechSynthesis.speak(msg);
+        }
+    }
+
+    window.onload = () => {
+        setTimeout(() => {
+            speak("selamat datang di jasteb Daniel Nesia silakan isi data dan scan qris untuk melanjutkan");
+        }, 800);
+    };
+
+    function confirmPayment() {
+        const name = document.getElementById('senderName').value;
+        const method = document.getElementById('paymentMethod').value;
+        const amt = document.getElementById('amount').value;
+
+        if(!name || !amt) {
+            alert("Lengkapi Nama dan Nominal!");
+            return;
+        }
+
+        // Data sekarang masuk ke Database Kedua
+        db.ref('payments_db2').push({
+            sender: name,
+            via: method,
+            nominal: amt,
+            timestamp: new Date().toLocaleString()
+        }).then(() => {
+            speak("terima kasih konfirmasi anda diterima admin Daniel Nesia akan segera memproses");
+            alert("Konfirmasi Terkirim ke Database 2!");
+            location.reload();
+        });
+    }
+</script>
+</body>
+</html>
